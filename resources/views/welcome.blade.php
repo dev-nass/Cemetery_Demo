@@ -49,14 +49,11 @@
                         }),
                         onEachFeature: (feature, layer) => {
                             layer.bindPopup(`
-                                                    <strong>Plot: ${feature.properties.plot_num}</strong><br>
-                                                    Section: ${feature.properties.section_id}<br>
-                                                    Status: ${feature.properties.status}<br>
-                                                    Area: ${feature.properties.area_sqm} sq.m
-                                                `);
-                            layer.on('click', () => {
-                                window.location.href = '/plots/' + feature.properties.plot_id;
-                            });
+                                        <strong>Plot: ${feature.properties.plot_id}</strong><br>
+                                        Section: ${feature.properties.section_id}<br>
+                                        Status: ${feature.properties.status}<br>
+                                        Area: ${feature.properties.area_sqm} sq.m
+                                 `);
                         }
                     }).addTo(map);
                 })

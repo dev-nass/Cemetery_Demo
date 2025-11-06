@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plot;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PlotController extends Controller
@@ -28,4 +30,5 @@ class PlotController extends Controller
             'type' => 'FeatureCollection',
             'features' => $features,
         ]);
+    }
 }
