@@ -14,7 +14,7 @@ return new class extends Migration {
         Schema::create('plots', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Section::class);
-            $table->geometry('geometry');
+            $table->json('geometry');
             $table->timestamps();
         });
     }

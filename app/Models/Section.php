@@ -9,4 +9,11 @@ class Section extends Model
 {
     /** @use HasFactory<\Database\Factories\SectionFactory> */
     use HasFactory;
+
+    protected $guarded = [];
+
+    public function plots()
+    {
+        return $this->hasMany(Plot::class);
+    }
 }
