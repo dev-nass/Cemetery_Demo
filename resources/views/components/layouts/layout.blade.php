@@ -4,13 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>@yield('title', config('app.name', 'Laravel'))</title>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Extra page-specific styles --}}
+    @stack('styles')
 </head>
 
-<body>
+<body class="bg-gray-50 text-gray-900">
 
-    {{ $slot }}
+    {{-- Navbar or header can go here if needed --}}
+    <main class="py-4">
+        @yield('content')
+    </main>
+
+    {{-- Extra page-specific scripts --}}
+    @stack('scripts')
 </body>
 
 </html>
