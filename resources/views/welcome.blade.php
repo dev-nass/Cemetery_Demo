@@ -28,7 +28,7 @@
 
             // 🗺️ Add Google Satellite Tiles
             L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-                maxZoom: 20,
+                maxZoom: 30,
                 subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
             }).addTo(map);
 
@@ -49,11 +49,11 @@
                         }),
                         onEachFeature: (feature, layer) => {
                             layer.bindPopup(`
-                                        <strong>Plot: ${feature.properties.plot_id}</strong><br>
-                                        Section: ${feature.properties.section_id}<br>
-                                        Status: ${feature.properties.status}<br>
-                                        Area: ${feature.properties.area_sqm} sq.m
-                                 `);
+                                            <strong>Plot: ${feature.properties.plot_id}</strong><br>
+                                            Section: ${feature.properties.section_id}<br>
+                                            Status: ${feature.properties.status}<br>
+                                            Area: ${feature.properties.area_sqm} sq.m
+                                     `);
                         }
                     }).addTo(map);
                 })
