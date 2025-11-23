@@ -24,7 +24,7 @@
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const map = L.map('map').setView([14.3095, 120.9367], 18);
+            const map = L.map('map').setView([14.3052681, 120.9758], 18);
 
             // 🗺️ Add Google Satellite Tiles
             L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
@@ -49,11 +49,11 @@
                         }),
                         onEachFeature: (feature, layer) => {
                             layer.bindPopup(`
-                                            <strong>Plot: ${feature.properties.plot_id}</strong><br>
-                                            Section: ${feature.properties.section_id}<br>
-                                            Status: ${feature.properties.status}<br>
-                                            Area: ${feature.properties.area_sqm} sq.m
-                                     `);
+                                                <strong>Plot: ${feature.properties.plot_id}</strong><br>
+                                                Section: ${feature.properties.section_id}<br>
+                                                Status: ${feature.properties.status}<br>
+                                                Area: ${feature.properties.area_sqm} sq.m
+                                         `);
                         }
                     }).addTo(map);
                 })
