@@ -8,6 +8,13 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    {{-- Leaflet and Leaft Draw CDN --}}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+
     {{-- Extra page-specific styles --}}
     @stack('styles')
 </head>
@@ -21,7 +28,6 @@
 
     {{-- Extra page-specific scripts --}}
     @stack('scripts')
-    @routes
 </body>
 
 </html>

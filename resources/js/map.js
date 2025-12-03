@@ -40,5 +40,19 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch((err) => console.error("Error loading GeoJSON:", err));
 
-    const drawControl = new L.Control.Draw({});
+    var drawControl = new L.Control.Draw({
+        draw: {
+            polygon: true,
+            marker: false,
+            circle: false,
+            rectangle: false,
+        },
+    });
+
+    map.addControl(drawControl);
+
+    map.on("draw:created", function (e) {
+        var layer = e.layer;
+        layer.addTo(map);
+    });
 });
