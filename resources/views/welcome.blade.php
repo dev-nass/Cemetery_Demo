@@ -27,6 +27,10 @@
                 disabled>
                 <span id="save-plot-text">Draw a Plot to Enable Save</span>
             </button>
+            <button id="clear-path-btn"
+                class="mt-3 py-2 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 transition-colors">
+                Clear Navigation Path (Not Used on this demo)
+            </button>
         </section>
         <div id="map" style="height: 80vh; border-radius: 10px;"></div>
 
@@ -63,7 +67,7 @@
 
                                 <pre id="geojson-output"
                                     class="mt-2 p-2 text-xs bg-white rounded-md overflow-x-auto text-red-700">
-                                No polygon drawn yet.</pre>
+                                            No polygon drawn yet.</pre>
                             </div>
                         </div>
                     </el-dialog-panel>
