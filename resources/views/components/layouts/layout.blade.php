@@ -21,6 +21,7 @@
 
     {{-- Extra page-specific scripts --}}
     @stack('scripts')
+    @routes
 </body>
 
 </html>
