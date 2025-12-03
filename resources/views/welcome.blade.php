@@ -17,6 +17,16 @@
                     <path d="M12 5v14" />
                 </svg>
                 Deceased Record</button>
+
+        </section>
+
+        {{-- Polygon Acton Buttons --}}
+        <section>
+            <button id="save-plot-btn"
+                class="mt-3 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-600 transition-colors cursor-not-allowed opacity-50"
+                disabled>
+                <span id="save-plot-text">Draw a Plot to Enable Save</span>
+            </button>
         </section>
         <div id="map" style="height: 80vh; border-radius: 10px;"></div>
 
@@ -50,6 +60,10 @@
                             </div>
                             <div class="relative mt-6 flex-1 px-4 sm:px-6">
                                 <!-- Your content -->
+
+                                <pre id="geojson-output"
+                                    class="mt-2 p-2 text-xs bg-white rounded-md overflow-x-auto text-red-700">
+                                No polygon drawn yet.</pre>
                             </div>
                         </div>
                     </el-dialog-panel>
