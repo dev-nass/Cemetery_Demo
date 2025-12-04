@@ -1,5 +1,6 @@
 import { route } from "ziggy-js";
-import { saveNewPlot } from "./maps/useSaveNewPlot.js";
+import { storePlot } from "./maps/useStorePlot.js";
+import { updatePlot } from "./maps/useUpdatePlot.js";
 
 let map; // use for the base map (layer)
 let DbGeoJsonPlots; // store DB-fetched plots
@@ -14,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Handle the SAVE button click
 document
     .getElementById("save-plot-btn")
-    .addEventListener("click", () => saveNewPlot(newGeoJsonData));
+    .addEventListener("click", () => storePlot(newGeoJsonData));
 
 const initializeMap = () => {
     map = L.map("map").setView([14.3052681, 120.9758], 18);
@@ -37,6 +38,7 @@ const initializeMap = () => {
     // Set up event handlers first
     handleDrawEvent();
     handleDeleteEvent();
+    handleEditEvent();
 
     // Fetch DB data last
     fetchDBGeoJson();
@@ -260,6 +262,21 @@ const handleDeleteEvent = () => {
     // document
     //     .getElementById("clear-path-btn")
     //     .addEventListener("click", clearPath);
+};
+
+const handleEditEvent = () => {
+    map.on(L.Draw.Event.EDITED, function (e) {
+        e.layers.eachLayer((layer) => {
+            const updatedGeoJSON = layer.toGeoJSON();
+            const plotId = layer.feature.properties.plot_id;
+
+            console.log("Edited Plot ID:", plotId);
+            console.log("Updated geometry:", updatedGeoJSON.geometry);
+
+            // Save to backend
+            updatePlot(plotId, updatedGeoJSON.geometry);
+        });
+    });
 };
 
 window.refreshMap = function () {

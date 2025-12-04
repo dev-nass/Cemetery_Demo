@@ -44,4 +44,17 @@ class PlotController extends Controller
 
         return response()->json($plot, 201);
     }
+
+    public function update(Request $request)
+    {
+        $plot = Plot::findOrFail($request->plot_id);
+
+        $plot->geometry = $request->geometry;
+        $plot->save();
+
+        return response()->json([
+            'message' => 'Plot updated successfully!',
+            'plot' => $plot
+        ]);
+    }
 }

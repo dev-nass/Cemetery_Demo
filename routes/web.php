@@ -11,5 +11,6 @@ Route::controller(PlotController::class)
     ->group(function () {
         Route::get('/geojson', 'geoJson')->name('plots.geojson');
         Route::post('/plots', 'store')->name('plot.store');
+        Route::put('/plots/update', 'update')->name('plot.update');
     });
 

@@ -1,6 +1,6 @@
 import { route } from "ziggy-js";
 
-export async function saveNewPlot(newGeoJsonData) {
+export async function storePlot(newGeoJsonData) {
     if (!newGeoJsonData) {
         console.error("Cannot save: No GeoJSON data or User ID is available.");
         document.getElementById("save-status").textContent =
