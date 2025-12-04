@@ -1,4 +1,5 @@
 import { route } from "ziggy-js";
+import { saveNewPlot } from "./maps/useSaveNewPlot.js";
 
 let map; // use for the base map (layer)
 let DbGeoJsonPlots; // store DB-fetched plots
@@ -9,6 +10,11 @@ let newlyDrawnLayers = []; // Track newly drawn layers
 document.addEventListener("DOMContentLoaded", function () {
     initializeMap();
 });
+
+// Handle the SAVE button click
+document
+    .getElementById("save-plot-btn")
+    .addEventListener("click", () => saveNewPlot(newGeoJsonData));
 
 const initializeMap = () => {
     map = L.map("map").setView([14.3052681, 120.9758], 18);
@@ -250,47 +256,25 @@ const handleDeleteEvent = () => {
         }
     });
 
-    // Handle the SAVE button click
-    document
-        .getElementById("save-plot-btn")
-        .addEventListener("click", saveNewPlot);
     // Handle Clear Path button click
     // document
     //     .getElementById("clear-path-btn")
     //     .addEventListener("click", clearPath);
 };
 
-async function saveNewPlot() {
-    if (!newGeoJsonData) {
-        console.error("Cannot save: No GeoJSON data or User ID is available.");
-        document.getElementById("save-status").textContent =
-            "Error: Cannot save (missing data).";
-        document.getElementById("save-status").classList.add("text-red-500");
-        return;
-    }
+window.refreshMap = function () {
+    // Clear old layers
+    editableLayers.clearLayers();
 
-    const statusElement = document.getElementById("save-status");
-    statusElement.textContent = "Saving...";
-    statusElement.classList.remove("text-red-500", "text-green-500");
-    statusElement.classList.add("text-yellow-600");
+    // Clear GeoJSON Layers
+    map.eachLayer((layer) => {
+        if (layer instanceof L.GeoJSON) {
+            map.removeLayer(layer);
+        }
+    });
 
-    const newPlotData = {
-        section_id: 1,
-        geometry: JSON.stringify(newGeoJsonData.geometry),
-    };
+    // Re-fetch DB polygons
+    fetchDBGeoJson();
 
-    fetch(route("plot.store"), {
-        method: "POST",
-        body: JSON.stringify(newPlotData),
-        headers: {
-            "Content-type": "application/json; charset=UTF-8",
-        },
-    })
-        .then((res) =>
-            res.json().then((data) => ({ status: res.status, body: data }))
-        )
-        .then((obj) => console.log(obj))
-        .catch((error) => {
-            console.error("Error:", error);
-        });
-}
+    console.log("Map refreshed.");
+};
