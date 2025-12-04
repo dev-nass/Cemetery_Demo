@@ -31,4 +31,17 @@ class PlotController extends Controller
             'features' => $features,
         ]);
     }
+
+    public function store(Request $request)
+    {
+
+        $validated = $request->validate([
+            'section_id' => 'required',
+            'geometry' => 'required|json',
+        ]);
+
+        $plot = Plot::create($validated);
+
+        return response()->json($plot, 201);
+    }
 }

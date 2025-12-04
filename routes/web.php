@@ -6,5 +6,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', fn() => view('welcome'));
 
 
-Route::get('/plots/geojson', [PlotController::class, 'geoJson'])->name('plots.geojson');
+Route::controller(PlotController::class)
+    ->prefix('plots')
+    ->group(function () {
+        Route::get('/geojson', 'geoJson')->name('plots.geojson');
+        Route::post('/plots', 'store')->name('plot.store');
+    });
 
