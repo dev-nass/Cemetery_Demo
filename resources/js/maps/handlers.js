@@ -1,15 +1,17 @@
 import { updatePlot } from "./actions";
+import { mapState } from "./state.js";
+import { updateSaveButton, updateGeoJsonOutput } from "../map.js";
 
 export function handleDrawEvent(map) {
     map.on(L.Draw.Event.CREATED, function (e) {
         const layer = e.layer;
 
         // Add to map immediately for visual feedback
-        editableLayers.addLayer(layer);
-        newlyDrawnLayers.push(layer);
+        mapState.editableLayers.addLayer(layer);
+        mapState.newlyDrawnLayers.push(layer);
 
         const geojson = layer.toGeoJSON();
-        newGeoJsonData = geojson;
+        mapState.newGeoJsonData = geojson;
 
         updateSaveButton(true);
         updateGeoJsonOutput(geojson.geometry.coordinates);
@@ -22,14 +24,14 @@ export function handleDeleteEvent(map) {
 
         // Check if any newly drawn layers were deleted
         deletedLayers.eachLayer((layer) => {
-            const index = newlyDrawnLayers.indexOf(layer);
+            const index = mapState.newlyDrawnLayers.indexOf(layer);
             if (index > -1) {
-                newlyDrawnLayers.splice(index, 1);
+                mapState.newlyDrawnLayers.splice(index, 1);
             }
         });
 
         // If no newly drawn layers remain, reset the UI
-        if (newlyDrawnLayers.length === 0) {
+        if (mapState.newlyDrawnLayers.length === 0) {
             newGeoJsonData = null;
 
             const geojsonOutput = document.getElementById("geojson-output");

@@ -5,16 +5,7 @@ import {
     handleDeleteEvent,
     handleEditEvent,
 } from "./maps/handlers.js";
-
-let map; // use for the base map (layer)
-let DbGeoJsonPlots = []; // store DB-fetched plots
-let DbGeoJsonLayer; // layer for DB-fetched plots
-
-let newGeoJsonData;
-let newlyDrawnLayers = []; // holds the newly drawn polygons; not yet saved to DB
-
-let editableLayers; // holds the polygons that's avaibale for editing; data from DB + newly drawn
-let allPlotsLayer; // layer that holds all plots from DB (purpose: not all plots are editable only the available)
+import { mapState } from "./maps/state.js";
 
 const MIN_RENDER_ZOOM = 20;
 const RENDER_DEBOUNCE_MS = 150;
@@ -44,11 +35,11 @@ function attachPlotPopup(feature, layer) {
     `);
 
     // Add to editableLayers for editing capability
-    editableLayers.addLayer(layer);
+    mapState.editableLayers.addLayer(layer);
 }
 
 function initializeMap() {
-    map = L.map("map", {
+    mapState.map = L.map("map", {
         renderer: L.canvas(),
         preferCanvas: true,
     }).setView([14.3052681, 120.9758], 18);
@@ -56,19 +47,19 @@ function initializeMap() {
     L.tileLayer("https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {
         maxZoom: 30,
         subdomains: ["mt0", "mt1", "mt2", "mt3"],
-    }).addTo(map);
+    }).addTo(mapState.map);
 
-    editableLayers = new L.FeatureGroup();
-    map.addLayer(editableLayers);
+    mapState.editableLayers = new L.FeatureGroup();
+    mapState.map.addLayer(mapState.editableLayers);
 
     initializeDrawControl();
-    handleDrawEvent(map);
-    handleDeleteEvent(map);
-    handleEditEvent(map);
+    handleDrawEvent(mapState.map);
+    handleDeleteEvent(mapState.map);
+    handleEditEvent(mapState.map);
 
     // Debounced zoom handler
     let zoomTimeout;
-    map.on("zoomend", () => {
+    mapState.map.on("zoomend", () => {
         clearTimeout(zoomTimeout);
         zoomTimeout = setTimeout(updateLayerVisibility, RENDER_DEBOUNCE_MS);
     });
@@ -81,14 +72,14 @@ function fetchDBGeoJson() {
         .then((response) => response.json())
         .then((data) => {
             const processedFeatures = processFeatures(data);
-            DbGeoJsonPlots = processedFeatures;
+            mapState.DbGeoJsonPlots = processedFeatures;
 
             // Create the layer ONCE with all data
-            if (allPlotsLayer) {
-                map.removeLayer(allPlotsLayer);
+            if (mapState.allPlotsLayer) {
+                mapState.map.removeLayer(mapState.allPlotsLayer);
             }
 
-            allPlotsLayer = L.geoJSON(processedFeatures, {
+            mapState.allPlotsLayer = L.geoJSON(processedFeatures, {
                 style: getPlotStyle,
                 onEachFeature: attachPlotPopup,
             });
@@ -141,16 +132,16 @@ function validateFeature(feature) {
 }
 
 function updateLayerVisibility() {
-    const zoom = map.getZoom();
+    const zoom = mapState.map.getZoom();
 
     if (zoom < MIN_RENDER_ZOOM) {
-        if (map.hasLayer(allPlotsLayer)) {
-            map.removeLayer(allPlotsLayer);
+        if (mapState.map.hasLayer(mapState.allPlotsLayer)) {
+            mapState.map.removeLayer(mapState.allPlotsLayer);
             console.log("Plots hidden (zoom too far)");
         }
     } else {
-        if (!map.hasLayer(allPlotsLayer)) {
-            map.addLayer(allPlotsLayer);
+        if (!mapState.map.hasLayer(mapState.allPlotsLayer)) {
+            mapState.map.addLayer(mapState.allPlotsLayer);
             console.log("Plots visible");
         }
     }
@@ -167,16 +158,16 @@ function initializeDrawControl() {
             circlemarker: false,
         },
         edit: {
-            featureGroup: editableLayers,
+            featureGroup: mapState.editableLayers,
             remove: true,
             edit: true,
         },
     });
 
-    map.addControl(drawControl);
+    mapState.map.addControl(drawControl);
 }
 
-function updateSaveButton(enabled) {
+export function updateSaveButton(enabled) {
     const saveBtn = document.getElementById("save-plot-btn");
     const saveBtnText = document.getElementById("save-plot-text");
 
@@ -197,7 +188,7 @@ function updateSaveButton(enabled) {
     }
 }
 
-function updateGeoJsonOutput(coordinates) {
+export function updateGeoJsonOutput(coordinates) {
     const geojsonOutput = document.getElementById("geojson-output");
     if (geojsonOutput) {
         geojsonOutput.textContent = coordinates
@@ -217,7 +208,7 @@ document.addEventListener("DOMContentLoaded", initializeMap);
 
 // Save button handler
 document.getElementById("save-plot-btn")?.addEventListener("click", () => {
-    if (newGeoJsonData) {
-        storePlot(newGeoJsonData);
+    if (mapState.newGeoJsonData) {
+        storePlot(mapState.newGeoJsonData);
     }
 });
