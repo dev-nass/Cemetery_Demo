@@ -27,16 +27,91 @@ function getPlotStyle(feature) {
 }
 
 function attachPlotPopup(feature, layer) {
-    layer.bindPopup(`
-        <strong>Plot: ${feature.properties.plot_id}</strong><br>
-        Section: ${feature.properties.section_id}<br>
-        Status: ${feature.properties.status}<br>
-        Area: ${feature.properties.area_sqm} sq.m
-    `);
+    // Wait for layer to be added to map before creating popup
+    layer.on("add", function () {
+        const layerId = layer._leaflet_id;
 
-    // Add to editableLayers for editing capability
-    mapState.editableLayers.addLayer(layer);
+        const popupContent = `
+            <strong>Plot: ${feature.properties.plot_id}</strong><br>
+            Section: ${feature.properties.section_id}<br>
+            Status: ${feature.properties.status}<br>
+            Area: ${feature.properties.area_sqm} sq.m<br>
+            <button onclick="selectPolygonForEditing(${layerId})" 
+                    class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                Edit This Plot
+            </button>
+        `;
+
+        layer.bindPopup(popupContent);
+    });
+
+    // Click handler to select for editing (alternative to button)
+    layer.on("click", function (e) {
+        if (e.originalEvent.shiftKey) {
+            // Hold Shift + Click to edit
+            selectPolygonForEditing(layer);
+            L.DomEvent.stopPropagation(e);
+        }
+    });
 }
+
+function selectPolygonForEditing(layerOrId) {
+    let layer;
+
+    // Handle both layer object and leaflet_id string/number
+    if (typeof layerOrId === "string" || typeof layerOrId === "number") {
+        const id = parseInt(layerOrId);
+
+        // Search in allPlotsLayer
+        mapState.allPlotsLayer.eachLayer((l) => {
+            if (l._leaflet_id === id) {
+                layer = l;
+            }
+        });
+    } else {
+        layer = layerOrId;
+    }
+
+    if (!layer) {
+        console.error("Layer not found for id:", layerOrId);
+        return;
+    }
+
+    // Clear previous selection
+    mapState.editableLayers.clearLayers();
+
+    // Get the GeoJSON data
+    const geojson = layer.toGeoJSON();
+
+    // Create editable layer with styling
+    const editableFeatureGroup = L.geoJSON(geojson, {
+        style: {
+            fillColor: geojson.properties?.status
+                ? {
+                      available: "#90EE90",
+                      occupied: "#FFB6C6",
+                      reserved: "#FFE66D",
+                  }[geojson.properties.status] || "#CCCCCC"
+                : "#CCCCCC",
+            color: "#FFD700", // Gold border to show it's selected
+            weight: 3,
+            fillOpacity: 0.7,
+        },
+    });
+
+    // Add each layer from the GeoJSON to editableLayers
+    editableFeatureGroup.eachLayer((l) => {
+        mapState.editableLayers.addLayer(l);
+    });
+
+    console.log(`Plot ${geojson.properties?.plot_id} selected for editing`);
+
+    // Close the original layer's popup
+    layer.closePopup();
+}
+
+// Make function globally accessible for button onclick
+window.selectPolygonForEditing = selectPolygonForEditing;
 
 function initializeMap() {
     mapState.map = L.map("map", {
@@ -81,7 +156,7 @@ function fetchDBGeoJson() {
 
             mapState.allPlotsLayer = L.geoJSON(processedFeatures, {
                 style: getPlotStyle,
-                onEachFeature: attachPlotPopup,
+                onEachFeature: attachPlotPopup, // Only adds popup, NOT to editableLayers
             });
 
             // Only add to map if zoom is appropriate
@@ -198,6 +273,9 @@ export function updateGeoJsonOutput(coordinates) {
 }
 
 window.refreshMap = function () {
+    // Clear selection when refreshing
+    mapState.editableLayers.clearLayers();
+
     // Efficient refresh - only update data, don't destroy layers
     fetchDBGeoJson();
     console.log("Map data refreshed");
