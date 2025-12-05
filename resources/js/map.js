@@ -7,6 +7,9 @@ import {
 } from "./maps/handlers.js";
 import { mapState } from "./maps/state.js";
 
+let sectionGeoJson = {}; // Loaded from server-side blade
+let plotGeoJson = {}; // Loaded from server-side blade
+
 const MIN_RENDER_ZOOM = 20;
 const RENDER_DEBOUNCE_MS = 150;
 
@@ -126,6 +129,20 @@ function initializeMap() {
 
     mapState.editableLayers = new L.FeatureGroup();
     mapState.map.addLayer(mapState.editableLayers);
+
+    // WILL ADDED SOON
+    // let sectionLayer = L.geoJSON(sectionGeoJson, {
+    //     style: { color: "blue" },
+    // });
+
+    // let plotLayer = L.geoJSON(plotGeoJson, {
+    //     style: { color: "green" },
+    // });
+
+    // sectionLayer.addTo(mapState.map);
+    // plotLayer.addTo(mapState.map);
+
+    // L.control.layers(null, overlays, { collapsed: false }).addTo(mapState.map);
 
     initializeDrawControl();
     handleDrawEvent(mapState.map);
@@ -272,6 +289,7 @@ export function updateGeoJsonOutput(coordinates) {
     }
 }
 
+// Global refresh function
 window.refreshMap = function () {
     // Clear selection when refreshing
     mapState.editableLayers.clearLayers();
