@@ -46,6 +46,16 @@ function attachPlotPopup(feature, layer) {
         `;
 
         layer.bindPopup(popupContent);
+
+        // Bind a permanent tooltip (label) showing the plot id
+        if (feature.properties?.plot_id) {
+            layer.bindTooltip(String(feature.properties.plot_id), {
+                permanent: true,
+                direction: "center",
+                className: "plot-label",
+                interactive: false,
+            });
+        }
     });
 
     // Click handler to select for editing (alternative to button)
@@ -126,6 +136,23 @@ function initializeMap() {
         maxZoom: 30,
         subdomains: ["mt0", "mt1", "mt2", "mt3"],
     }).addTo(mapState.map);
+
+    // Inject minimal CSS for tooltip labels so they are readable on polygons
+    const styleEl = document.createElement("style");
+    styleEl.textContent = `
+        .leaflet-tooltip.plot-label {
+            background: rgba(255,255,255,0.85);
+            border: 1px solid rgba(0,0,0,0.15);
+            color: #000;
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+        /* remove default tooltip pointer for centered labels */
+        .leaflet-tooltip.plot-label::after { display: none; }
+    `;
+    document.head.appendChild(styleEl);
 
     mapState.editableLayers = new L.FeatureGroup();
     mapState.map.addLayer(mapState.editableLayers);
