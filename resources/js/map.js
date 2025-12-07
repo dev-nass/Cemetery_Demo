@@ -157,7 +157,7 @@ function initializeMap() {
     mapState.editableLayers = new L.FeatureGroup();
     mapState.map.addLayer(mapState.editableLayers);
 
-    // WILL ADDED SOON
+    // WILL ADDED SOON (This separate the layers for sections and plots)
     // let sectionLayer = L.geoJSON(sectionGeoJson, {
     //     style: { color: "blue" },
     // });
