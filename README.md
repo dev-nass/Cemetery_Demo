@@ -22,3 +22,5 @@
     <p>This is my body content.</p>
 @endsection
 ```
+
+-   Leaflet Draw is only available through CDN
